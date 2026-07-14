@@ -77,7 +77,7 @@ def test_build_dataset_from_open_meteo_payloads():
     assert len(dataset) == 2
     first_row = dataset.iloc[0]
     assert first_row["PM25"] == 12.0
-    assert first_row["aod"] == 0.3
+    assert first_row["aod"] == pytest.approx(0.3)
     assert first_row["t2m"] == pytest.approx(299.15)
     assert first_row["d2m"] == pytest.approx(294.15)
     assert first_row["u10"] == pytest.approx(-2.0)
