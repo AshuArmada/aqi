@@ -46,6 +46,22 @@ python aqi/data_pipeline.py \
   --output-path aqi/data.csv
 ```
 
+Both Open-Meteo endpoints used here are free and require no API key. By
+default, weather comes from the **archive** API (ERA5 reanalysis), which is
+great for training but usually lags **~5 days behind today**. Pass `--live`
+to instead pull weather from the **forecast** API, which has no lag and
+includes today's data — use this when you want current conditions, and the
+default archive mode when building a historical training set:
+
+```bash
+python aqi/data_pipeline.py \
+  --locations "28.6,77.2" \
+  --start-date 2026-07-12 \
+  --end-date 2026-07-15 \
+  --output-path aqi/data_live.csv \
+  --live
+```
+
 ### 2. Train the model
 
 ```bash

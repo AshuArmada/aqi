@@ -13,6 +13,7 @@ from pipeline import REQUIRED_COLUMNS
 
 AIR_QUALITY_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
 WEATHER_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
+WEATHER_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
 
 @dataclass(frozen=True)
@@ -29,6 +30,7 @@ class DataFetchConfig:
     output_path: Path = Path("data.csv")
     timezone: str = "auto"
     timeout_seconds: int = 60
+    live: bool = False
 
 
 def parse_locations(value):
@@ -90,9 +92,10 @@ def fetch_air_quality(location, start_date, end_date, timezone, timeout_seconds=
     return daily
 
 
-def fetch_weather(location, start_date, end_date, timezone, timeout_seconds=60, fetcher=fetch_json):
+def fetch_weather(location, start_date, end_date, timezone, timeout_seconds=60, fetcher=fetch_json, live=False):
+    url = WEATHER_FORECAST_URL if live else WEATHER_ARCHIVE_URL
     payload = fetcher(
-        WEATHER_ARCHIVE_URL,
+        url,
         {
             "latitude": location.lat,
             "longitude": location.lon,
@@ -185,6 +188,7 @@ def build_dataset(config, fetcher=fetch_json):
             config.timezone,
             config.timeout_seconds,
             fetcher=fetcher,
+            live=config.live,
         )
         merged = air_quality.merge(weather, on="date", how="inner")
         merged["lat"] = location.lat
@@ -212,6 +216,12 @@ def parse_args():
     parser.add_argument("--end-date", required=True, help="End date as YYYY-MM-DD.")
     parser.add_argument("--output-path", type=Path, default=Path("data.csv"))
     parser.add_argument("--timezone", default="auto")
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Use Open-Meteo's forecast API for weather (recent/current data) instead "
+        "of the archive API, which lags several days behind.",
+    )
     return parser.parse_args()
 
 
@@ -224,6 +234,7 @@ def main():
             end_date=args.end_date,
             output_path=args.output_path,
             timezone=args.timezone,
+            live=args.live,
         )
     )
     print(f"Wrote {len(dataset)} rows to {args.output_path}")
