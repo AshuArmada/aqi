@@ -1,0 +1,35 @@
+{
+  "rows": 1620,
+  "train_rows": 967,
+  "test_rows": 653,
+  "locations": 400,
+  "feature_mode": "weather_time_location",
+  "date_range": {
+    "start": "2023-08-05",
+    "end": "2023-08-31",
+    "test_start": "2023-08-26"
+  },
+  "cv_rmse": {
+    "mean": 6.253806555159622,
+    "std": 0.8078449846153393
+  },
+  "baseline": {
+    "RMSE": 8.92801035735308,
+    "MAE": 6.674251830520519,
+    "R2": 0.13159519464675562
+  },
+  "tuned": {
+    "RMSE": 8.860293529574138,
+    "MAE": 6.621530179705292,
+    "R2": 0.1447185229159469
+  },
+  "chosen": "tuned",
+  "prediction_interval_90_coverage": 0.16539050535987748,
+  "best_params": {
+    "n_estimators": 200,
+    "min_samples_split": 10,
+    "min_samples_leaf": 2,
+    "max_features": 0.8,
+    "max_depth": 16
+  }
+}
